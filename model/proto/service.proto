@@ -1,0 +1,18 @@
+syntax = "proto3";
+option go_package = "github.com/MichalPolinkiewicz/roche/proto";
+
+
+service PingService {
+  rpc Ping (PingRequest) returns (PingResponse) {}
+}
+
+message PingRequest {
+  string message = 1;
+}
+
+message PingResponse {
+  string echo = 1;
+  string timestamp = 2;
+  string env = 3;
+  string version = 4;
+}
