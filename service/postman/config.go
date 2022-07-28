@@ -7,9 +7,9 @@ import (
 )
 
 type PostmanServiceConfig struct {
-	endpoint       string
-	requestTimeout time.Duration
-	requestParams  map[string]struct{}
+	endpoint             string
+	requestTimeout       time.Duration
+	allowedRequestParams map[string]struct{}
 }
 
 func NewPostmanServiceConfig(endpoint string, requestTimeout time.Duration, requestParams []string) (*PostmanServiceConfig, error) {
@@ -20,9 +20,9 @@ func NewPostmanServiceConfig(endpoint string, requestTimeout time.Duration, requ
 		return nil, fmt.Errorf("timeout can't be 0")
 	}
 	return &PostmanServiceConfig{
-		endpoint:       endpoint,
-		requestTimeout: requestTimeout,
-		requestParams:  requestParamsMapper(requestParams),
+		endpoint:             endpoint,
+		requestTimeout:       requestTimeout,
+		allowedRequestParams: requestParamsMapper(requestParams),
 	}, nil
 }
 

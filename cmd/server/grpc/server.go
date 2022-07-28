@@ -2,20 +2,20 @@ package grpc
 
 import (
 	"context"
-	proto "github.com/MichalPolinkiewicz/roche/model/proto"
+	"github.com/MichalPolinkiewicz/roche/model"
 	"time"
 )
 
 type GrpcServer struct {
-	proto.PingServiceServer
+	PingServiceServer
 }
 
 func NewGrpcServer() *GrpcServer {
 	return &GrpcServer{}
 }
 
-func (s *GrpcServer) Ping(context.Context, *proto.PingRequest) (*proto.PingResponse, error) {
-	return &proto.PingResponse{
+func (s *GrpcServer) Ping(context.Context, *model.PingRequest) (*model.PingResponse, error) {
+	return &model.PingResponse{
 		Echo:      "dummy",
 		Timestamp: time.Now().String(),
 		Env:       "dummy",

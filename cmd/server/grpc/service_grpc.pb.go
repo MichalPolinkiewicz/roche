@@ -4,10 +4,11 @@
 // - protoc             v3.11.4
 // source: service.proto
 
-package proto
+package grpc
 
 import (
 	context "context"
+	model "github.com/MichalPolinkiewicz/roche/model"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -22,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PingServiceClient interface {
-	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
+	Ping(ctx context.Context, in *model.PingRequest, opts ...grpc.CallOption) (*model.PingResponse, error)
 }
 
 type pingServiceClient struct {
@@ -33,8 +34,8 @@ func NewPingServiceClient(cc grpc.ClientConnInterface) PingServiceClient {
 	return &pingServiceClient{cc}
 }
 
-func (c *pingServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
-	out := new(PingResponse)
+func (c *pingServiceClient) Ping(ctx context.Context, in *model.PingRequest, opts ...grpc.CallOption) (*model.PingResponse, error) {
+	out := new(model.PingResponse)
 	err := c.cc.Invoke(ctx, "/PingService/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -46,7 +47,7 @@ func (c *pingServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...g
 // All implementations must embed UnimplementedPingServiceServer
 // for forward compatibility
 type PingServiceServer interface {
-	Ping(context.Context, *PingRequest) (*PingResponse, error)
+	Ping(context.Context, *model.PingRequest) (*model.PingResponse, error)
 	mustEmbedUnimplementedPingServiceServer()
 }
 
@@ -54,7 +55,7 @@ type PingServiceServer interface {
 type UnimplementedPingServiceServer struct {
 }
 
-func (UnimplementedPingServiceServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
+func (UnimplementedPingServiceServer) Ping(context.Context, *model.PingRequest) (*model.PingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedPingServiceServer) mustEmbedUnimplementedPingServiceServer() {}
@@ -71,7 +72,7 @@ func RegisterPingServiceServer(s grpc.ServiceRegistrar, srv PingServiceServer) {
 }
 
 func _PingService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PingRequest)
+	in := new(model.PingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -83,7 +84,7 @@ func _PingService_Ping_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/PingService/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PingServiceServer).Ping(ctx, req.(*PingRequest))
+		return srv.(PingServiceServer).Ping(ctx, req.(*model.PingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

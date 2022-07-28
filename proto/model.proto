@@ -1,10 +1,5 @@
 syntax = "proto3";
-option go_package = "github.com/MichalPolinkiewicz/roche/proto";
-
-
-service PingService {
-  rpc Ping (PingRequest) returns (PingResponse) {}
-}
+option go_package = "github.com/MichalPolinkiewicz/roche/model";
 
 message PingRequest {
   string message = 1;

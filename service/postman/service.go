@@ -29,7 +29,7 @@ func (s *PostmanService) Call(ctx context.Context, requestParams map[string]stri
 	}
 
 	for k, v := range requestParams {
-		if _, ok := s.config.requestParams[k]; ok {
+		if _, ok := s.config.allowedRequestParams[k]; ok {
 			req.URL.Query().Add(k, v)
 		}
 	}

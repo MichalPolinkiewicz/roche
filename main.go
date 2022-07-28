@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	// TODO - read cfg from file/envs, replace default logger
+	// TODO - read all cfg properties from file/envs, replace default logger
 
-	postmanServiceConfig, err := postman.NewPostmanServiceConfig("https://postman-echo.com/get?", time.Hour, []string{"message"})
+	postmanServiceConfig, err := postman.NewPostmanServiceConfig("https://postman-echo.com/get?", time.Second, []string{"message"})
 	if err != nil {
 		log.Fatal(err)
 	}
