@@ -2,18 +2,20 @@ package main
 
 import (
 	"context"
+	"log"
+	"net/http"
+	"os/signal"
+	"syscall"
+
+	httpSwagger "github.com/swaggo/http-swagger"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/MichalPolinkiewicz/roche/cmd/grpc"
 	"github.com/MichalPolinkiewicz/roche/cmd/rest"
 	"github.com/MichalPolinkiewicz/roche/config"
 	"github.com/MichalPolinkiewicz/roche/docs"
 	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
-	httpSwagger "github.com/swaggo/http-swagger"
-	"golang.org/x/sync/errgroup"
-	"log"
-	"net/http"
-	"os/signal"
-	"syscall"
 )
 
 func main() {
