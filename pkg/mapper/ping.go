@@ -22,7 +22,7 @@ type PingResponseOneToOneMapper struct{}
 
 func (m *PingResponseOneToOneMapper) Translate(response *service.PingResponse) (*model.PingResponse, error) {
 	if response == nil {
-		return nil, fmt.Errorf("request can't be nil")
+		return nil, fmt.Errorf("response can't be nil")
 	}
 
 	return &model.PingResponse{
