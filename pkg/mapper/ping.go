@@ -6,9 +6,9 @@ import (
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
 )
 
-type PingRequestMapper struct{}
+type PingRequestOneToOneMapper struct{}
 
-func (m *PingRequestMapper) Translate(request *model.PingRequest) (*service.PingRequest, error) {
+func (m *PingRequestOneToOneMapper) Translate(request *model.PingRequest) (*service.PingRequest, error) {
 	if request == nil {
 		return nil, fmt.Errorf("request can't be nil")
 	}
@@ -17,9 +17,9 @@ func (m *PingRequestMapper) Translate(request *model.PingRequest) (*service.Ping
 	}, nil
 }
 
-type PingResponseMapper struct{}
+type PingResponseOneToOneMapper struct{}
 
-func (m *PingResponseMapper) Translate(response *service.PingResponse) (*model.PingResponse, error) {
+func (m *PingResponseOneToOneMapper) Translate(response *service.PingResponse) (*model.PingResponse, error) {
 	if response == nil {
 		return nil, fmt.Errorf("request can't be nil")
 	}

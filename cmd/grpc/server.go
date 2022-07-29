@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/MichalPolinkiewicz/roche/model"
-	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
@@ -17,19 +16,35 @@ type PingClient interface {
 	Request(ctx context.Context, r *service.PingRequest) (*service.PingResponse, error)
 }
 
+type RequestMapper interface {
+	Translate(request *model.PingRequest) (*service.PingRequest, error)
+}
+
+type ResponseMapper interface {
+	Translate(response *service.PingResponse) (*model.PingResponse, error)
+}
+
 type GrpcServer struct {
 	port       string
 	pingClient PingClient
 	srv        *grpc.Server
+
+	requestMapper  RequestMapper
+	responseMapper ResponseMapper
 }
 
-func NewGrpcServer(port string, pingClient PingClient) (*GrpcServer, error) {
+func NewGrpcServer(port string, pingClient PingClient, reqMapper RequestMapper, respMapper ResponseMapper) (*GrpcServer, error) {
 	if strings.TrimSpace(port) == "" {
 		return nil, fmt.Errorf("invalid port provided")
 	}
+	if reqMapper == nil || respMapper == nil {
+		return nil, fmt.Errorf("request and response mappers can't be nil")
+	}
 	return &GrpcServer{
-		port:       port,
-		pingClient: pingClient,
+		port:           port,
+		pingClient:     pingClient,
+		requestMapper:  reqMapper,
+		responseMapper: respMapper,
 	}, nil
 }
 
@@ -69,8 +84,7 @@ func (s *GrpcServer) shutdownWatcher(ctx context.Context) error {
 }
 
 func (s *GrpcServer) Ping(ctx context.Context, pingRequest *model.PingRequest) (*model.PingResponse, error) {
-	requestMapper, responseMapper := mapper.PingRequestMapper{}, mapper.PingResponseMapper{}
-	serviceRequest, err := requestMapper.Translate(pingRequest)
+	serviceRequest, err := s.requestMapper.Translate(pingRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +92,7 @@ func (s *GrpcServer) Ping(ctx context.Context, pingRequest *model.PingRequest) (
 	if err != nil {
 		return nil, err
 	}
-	pingResponse, err := responseMapper.Translate(serviceResp)
+	pingResponse, err := s.responseMapper.Translate(serviceResp)
 	if err != nil {
 		return nil, err
 	}

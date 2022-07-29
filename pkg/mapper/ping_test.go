@@ -40,7 +40,7 @@ func TestPingRequestMapper_Translate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &PingRequestMapper{}
+			m := &PingRequestOneToOneMapper{}
 			got, err := m.Translate(tt.args.request)
 
 			require.Equal(t, tt.wantErr, err != nil)
@@ -86,7 +86,7 @@ func TestPingResponseMapper_Translate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &PingResponseMapper{}
+			m := &PingResponseOneToOneMapper{}
 			got, err := m.Translate(tt.args.response)
 
 			require.Equal(t, tt.wantErr, err != nil)

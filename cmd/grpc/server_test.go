@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/MichalPolinkiewicz/roche/model"
+	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -14,8 +15,10 @@ import (
 
 func TestNewGrpcServer(t *testing.T) {
 	type args struct {
-		port       string
-		pingClient PingClient
+		port           string
+		pingClient     PingClient
+		requestMapper  RequestMapper
+		responseMapper ResponseMapper
 	}
 	tests := []struct {
 		name    string
@@ -43,19 +46,23 @@ func TestNewGrpcServer(t *testing.T) {
 		{
 			name: "no client - should return nil && error",
 			args: args{
-				port:       "3000",
-				pingClient: &dummyPingClientMock{},
+				port:           "3000",
+				pingClient:     &dummyPingClientMock{},
+				requestMapper:  &mapper.PingRequestOneToOneMapper{},
+				responseMapper: &mapper.PingResponseOneToOneMapper{},
 			},
 			want: &GrpcServer{
-				port:       "3000",
-				pingClient: &dummyPingClientMock{},
+				port:           "3000",
+				pingClient:     &dummyPingClientMock{},
+				requestMapper:  &mapper.PingRequestOneToOneMapper{},
+				responseMapper: &mapper.PingResponseOneToOneMapper{},
 			},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewGrpcServer(tt.args.port, tt.args.pingClient)
+			got, err := NewGrpcServer(tt.args.port, tt.args.pingClient, tt.args.requestMapper, tt.args.responseMapper)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewGrpcServer() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -75,7 +82,7 @@ func (m *dummyPingClientMock) Request(ctx context.Context, r *service.PingReques
 
 func TestGrpcServer_Ping200(t *testing.T) {
 	port := "30069"
-	srv, err := NewGrpcServer(port, &dummyPingClientMock200{})
+	srv, err := NewGrpcServer(port, &dummyPingClientMock200{}, &mapper.PingRequestOneToOneMapper{}, &mapper.PingResponseOneToOneMapper{})
 	require.Nil(t, err)
 	require.NotNil(t, srv)
 
@@ -94,10 +101,9 @@ func TestGrpcServer_Ping200(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, got)
 	require.True(t, proto.Equal(&model.PingResponse{
-		Echo:      "grpc test",
-		Timestamp: "",
-		Env:       "dev",
-		Version:   "2",
+		Echo:    "grpc test",
+		Env:     "dev",
+		Version: "2",
 	}, got))
 }
 
@@ -105,16 +111,15 @@ type dummyPingClientMock200 struct{}
 
 func (m *dummyPingClientMock200) Request(ctx context.Context, r *service.PingRequest) (*service.PingResponse, error) {
 	return &service.PingResponse{
-		Echo:      "grpc test",
-		Timestamp: "",
-		Env:       "dev",
-		Version:   "2",
+		Echo:    "grpc test",
+		Env:     "dev",
+		Version: "2",
 	}, nil
 }
 
 func TestGrpcServer_PingNilRequest(t *testing.T) {
 	port := "30069"
-	srv, err := NewGrpcServer(port, &dummyPingClientMock{})
+	srv, err := NewGrpcServer(port, &dummyPingClientMock{}, &mapper.PingRequestOneToOneMapper{}, &mapper.PingResponseOneToOneMapper{})
 	require.Nil(t, err)
 	require.NotNil(t, srv)
 

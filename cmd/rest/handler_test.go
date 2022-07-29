@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -13,7 +14,9 @@ import (
 
 func TestPingHandler_Handle(t *testing.T) {
 	type fields struct {
-		pingClient PingClient
+		pingClient     PingClient
+		requestMapper  RequestMapper
+		responseMapper ResponseMapper
 	}
 	type args struct {
 		w *httptest.ResponseRecorder
@@ -29,7 +32,7 @@ func TestPingHandler_Handle(t *testing.T) {
 		{
 			name: "unexpected request method",
 			fields: fields{
-				pingClient: nil,
+				pingClient: &dummyPingClientNilResponse{},
 			},
 			args: args{
 				w: httptest.NewRecorder(),
@@ -40,7 +43,7 @@ func TestPingHandler_Handle(t *testing.T) {
 		{
 			name: "invalid request body",
 			fields: fields{
-				pingClient: nil,
+				pingClient: &dummyPingClientNilResponse{},
 			},
 			args: args{
 				w: httptest.NewRecorder(),
@@ -51,7 +54,9 @@ func TestPingHandler_Handle(t *testing.T) {
 		{
 			name: "nil response from client",
 			fields: fields{
-				pingClient: &dummyPingClientNilResponse{},
+				pingClient:     &dummyPingClientNilResponse{},
+				requestMapper:  &mapper.PingRequestOneToOneMapper{},
+				responseMapper: &mapper.PingResponseOneToOneMapper{},
 			},
 			args: args{
 				w: httptest.NewRecorder(),
@@ -62,7 +67,9 @@ func TestPingHandler_Handle(t *testing.T) {
 		{
 			name: "request with message and extra fields",
 			fields: fields{
-				pingClient: &dummyPingClient200{},
+				pingClient:     &dummyPingClient200{},
+				requestMapper:  &mapper.PingRequestOneToOneMapper{},
+				responseMapper: &mapper.PingResponseOneToOneMapper{},
 			},
 			args: args{
 				w: httptest.NewRecorder(),
@@ -74,7 +81,9 @@ func TestPingHandler_Handle(t *testing.T) {
 		{
 			name: "200",
 			fields: fields{
-				pingClient: &dummyPingClient200{},
+				pingClient:     &dummyPingClient200{},
+				requestMapper:  &mapper.PingRequestOneToOneMapper{},
+				responseMapper: &mapper.PingResponseOneToOneMapper{},
 			},
 			args: args{
 				w: httptest.NewRecorder(),
@@ -86,8 +95,13 @@ func TestPingHandler_Handle(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := &PingHandler{pingClient: tt.fields.pingClient}
-			h.Handle(tt.args.w, tt.args.r)
+			pingHandler := PingHandler{
+				pingClient:     tt.fields.pingClient,
+				requestMapper:  tt.fields.requestMapper,
+				responseMapper: tt.fields.responseMapper,
+			}
+
+			pingHandler.Handle(tt.args.w, tt.args.r)
 			require.Equal(t, tt.expectedCode, tt.args.w.Result().StatusCode)
 
 			if tt.expectedBody != "" {

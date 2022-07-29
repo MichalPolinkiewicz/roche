@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/MichalPolinkiewicz/roche/model"
-	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
 	"github.com/golang/protobuf/jsonpb"
 )
@@ -15,16 +14,31 @@ type PingClient interface {
 	Request(ctx context.Context, r *service.PingRequest) (*service.PingResponse, error)
 }
 
-type PingHandler struct {
-	pingClient PingClient
+type RequestMapper interface {
+	Translate(request *model.PingRequest) (*service.PingRequest, error)
 }
 
-func NewPingHandler(pingClient PingClient) (*PingHandler, error) {
+type ResponseMapper interface {
+	Translate(response *service.PingResponse) (*model.PingResponse, error)
+}
+
+type PingHandler struct {
+	pingClient     PingClient
+	requestMapper  RequestMapper
+	responseMapper ResponseMapper
+}
+
+func NewPingHandler(pingClient PingClient, reqMapper RequestMapper, respMapper ResponseMapper) (*PingHandler, error) {
 	if pingClient == nil {
 		return nil, fmt.Errorf("pingable can't be nil")
 	}
+	if reqMapper == nil || respMapper == nil {
+		return nil, fmt.Errorf("request and response mappers can't be nil")
+	}
 	return &PingHandler{
-		pingClient: pingClient,
+		pingClient:     pingClient,
+		responseMapper: respMapper,
+		requestMapper:  reqMapper,
 	}, nil
 }
 
@@ -41,8 +55,7 @@ func (h *PingHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	requestMapper, responseMapper := mapper.PingRequestMapper{}, mapper.PingResponseMapper{}
-	serviceRequest, err := requestMapper.Translate(&pingRequest)
+	serviceRequest, err := h.requestMapper.Translate(&pingRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -53,7 +66,7 @@ func (h *PingHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pingResponse, err := responseMapper.Translate(serviceResponse)
+	pingResponse, err := h.responseMapper.Translate(serviceResponse)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

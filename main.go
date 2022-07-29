@@ -6,6 +6,7 @@ import (
 	"github.com/MichalPolinkiewicz/roche/cmd/rest"
 	"github.com/MichalPolinkiewicz/roche/config"
 	"github.com/MichalPolinkiewicz/roche/docs"
+	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"golang.org/x/sync/errgroup"
@@ -33,13 +34,13 @@ func main() {
 func start(ctx context.Context, appConfig *config.AppConfig) error {
 	// client && ping service init
 	postmanClient, err := service.NewPostmanClient(appConfig.PingServiceClientEndpoint, http.DefaultClient)
-	pingService, err := service.NewPingService(postmanClient, appConfig.PingServiceTimeout, service.NewPingDecorator("1", appConfig.Env))
+	pingService, err := service.NewPingService(postmanClient, appConfig.PingServiceTimeout, service.NewPingDecorator(appConfig.Version, appConfig.Env))
 	if err != nil {
 		return err
 	}
 
 	// create REST server
-	pingRestHandler, err := rest.NewPingHandler(pingService)
+	pingRestHandler, err := rest.NewPingHandler(pingService, &mapper.PingRequestOneToOneMapper{}, &mapper.PingResponseOneToOneMapper{})
 	if err != nil {
 		return err
 	}
@@ -49,18 +50,19 @@ func start(ctx context.Context, appConfig *config.AppConfig) error {
 	}
 
 	swaggerEndpoint, err := rest.NewEndpoint("/swagger/", http.MethodGet, httpSwagger.Handler(httpSwagger.URL("http://localhost:8030/swagger/swagger.yaml")))
-	srvFile, err := rest.NewEndpoint("/swagger/swagger.yaml", http.MethodGet, docs.SwaggerServefile)
+	swaggerServeFileEndpoint, err := rest.NewEndpoint("/swagger/swagger.yaml", http.MethodGet, docs.SwaggerServefile)
 
-	restServer, err := rest.NewRestServer(appConfig.RestPort, []*rest.Endpoint{swaggerEndpoint, pingRestEndpoint, srvFile})
+	restServer, err := rest.NewRestServer(appConfig.RestPort, []*rest.Endpoint{swaggerEndpoint, pingRestEndpoint, swaggerServeFileEndpoint})
 	if err != nil {
 		return err
 	}
 
 	// create GRPC server
-	grpcServer, err := grpc.NewGrpcServer(appConfig.GrpcPort, pingService)
+	grpcServer, err := grpc.NewGrpcServer(appConfig.GrpcPort, pingService, &mapper.PingRequestOneToOneMapper{}, &mapper.PingResponseOneToOneMapper{})
 	if err != nil {
 		return err
 	}
+
 	return runServers(ctx, restServer, grpcServer)
 }
 
