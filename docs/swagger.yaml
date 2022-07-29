@@ -1,0 +1,48 @@
+swagger: "2.0"
+info:
+  title: PingServiceAPI
+  version: 0.0.1
+paths:
+  /swagger:
+    get:
+      responses:
+        200:
+          description: ok
+      summary: Returns Swagger docs for available endpoints
+  /ping:
+    post:
+      summary: Returns dummy response
+      parameters:
+        - in: formData
+          name: message
+          required: true
+          type: string
+          description: Dummy message
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+            properties:
+              echo:
+                type: string
+                description: Echo response from external API
+              timestamp:
+                type: integer
+                description: Response creation time in UNIX format
+              env:
+                type: string
+                description: Current environment
+              version:
+                type: string
+                description: Current app version
+        400:
+          description: Invalid request body or missing message parameter
+        405:
+          description: Unsupported http method. Only POST allowed
+        500:
+          description: Server error

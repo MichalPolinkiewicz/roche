@@ -6,8 +6,8 @@ message PingRequest {
 }
 
 message PingResponse {
-  string echo = 1;
-  string timestamp = 2;
+  repeated bytes echo = 1;
+  int64 timestamp = 2;
   string env = 3;
   string version = 4;
 }
