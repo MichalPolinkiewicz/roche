@@ -2,15 +2,17 @@ package grpc
 
 import (
 	"context"
-	"github.com/MichalPolinkiewicz/roche/model"
-	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
-	"github.com/MichalPolinkiewicz/roche/pkg/service"
+	"reflect"
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
-	"reflect"
-	"testing"
+
+	"github.com/MichalPolinkiewicz/roche/model"
+	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
+	"github.com/MichalPolinkiewicz/roche/pkg/service"
 )
 
 func TestNewGrpcServer(t *testing.T) {

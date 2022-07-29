@@ -2,6 +2,7 @@ package mapper
 
 import (
 	"fmt"
+
 	"github.com/MichalPolinkiewicz/roche/model"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
 )

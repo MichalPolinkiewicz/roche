@@ -34,6 +34,9 @@ func main() {
 func start(ctx context.Context, appConfig *config.AppConfig) error {
 	// client && ping service init
 	postmanClient, err := service.NewPostmanClient(appConfig.PingServiceClientEndpoint, http.DefaultClient)
+	if err != nil {
+		return err
+	}
 	pingService, err := service.NewPingService(postmanClient, appConfig.PingServiceTimeout, service.NewPingDecorator(appConfig.Version, appConfig.Env))
 	if err != nil {
 		return err

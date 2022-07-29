@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -30,7 +31,13 @@ func (c *PostmanClient) Get(ctx context.Context, message string) ([]byte, error)
 	if err != nil {
 		return nil, err
 	}
-	req.URL.Query().Add("message", message)
+
+	query, err := url.ParseQuery(req.URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+	query.Add("message", message)
+	req.URL.RawQuery = query.Encode()
 
 	resp, err := c.callable.Do(req)
 	if err != nil {

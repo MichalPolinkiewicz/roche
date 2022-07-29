@@ -1,10 +1,12 @@
 package mapper
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
 	"github.com/MichalPolinkiewicz/roche/model"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
-	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestPingRequestMapper_Translate(t *testing.T) {

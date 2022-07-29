@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewPingService(t *testing.T) {

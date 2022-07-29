@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/golang/protobuf/jsonpb"
+
 	"github.com/MichalPolinkiewicz/roche/model"
 	"github.com/MichalPolinkiewicz/roche/pkg/service"
-	"github.com/golang/protobuf/jsonpb"
 )
 
 type PingClient interface {

@@ -3,10 +3,11 @@ package rest
 import (
 	"context"
 	"fmt"
-	"golang.org/x/sync/errgroup"
 	"log"
 	"net/http"
 	"strings"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type RestServer struct {

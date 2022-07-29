@@ -3,11 +3,12 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestPostmanClient_GetClientResponseError(t *testing.T) {

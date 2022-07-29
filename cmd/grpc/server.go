@@ -3,13 +3,15 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/MichalPolinkiewicz/roche/model"
-	"github.com/MichalPolinkiewicz/roche/pkg/service"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/grpc"
 	"log"
 	"net"
 	"strings"
+
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
+
+	"github.com/MichalPolinkiewicz/roche/model"
+	"github.com/MichalPolinkiewicz/roche/pkg/service"
 )
 
 type PingClient interface {

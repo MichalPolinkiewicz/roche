@@ -7,10 +7,12 @@
 package grpc
 
 import (
-	model "github.com/MichalPolinkiewicz/roche/model"
+	reflect "reflect"
+
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
+
+	model "github.com/MichalPolinkiewicz/roche/model"
 )
 
 const (

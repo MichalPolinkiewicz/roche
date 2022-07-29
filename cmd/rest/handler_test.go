@@ -2,14 +2,16 @@ package rest
 
 import (
 	"context"
-	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
-	"github.com/MichalPolinkiewicz/roche/pkg/service"
-	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/MichalPolinkiewicz/roche/pkg/mapper"
+	"github.com/MichalPolinkiewicz/roche/pkg/service"
 )
 
 func TestPingHandler_Handle(t *testing.T) {
