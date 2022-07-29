@@ -54,7 +54,7 @@ func start(ctx context.Context, appConfig *config.AppConfig) error {
 		return err
 	}
 
-	swaggerEndpoint, err := rest.NewEndpoint("/swagger/", http.MethodGet, httpSwagger.Handler(httpSwagger.URL("http://localhost:8030/swagger/swagger.yaml")))
+	swaggerEndpoint, err := rest.NewEndpoint("/swagger/", http.MethodGet, httpSwagger.Handler(httpSwagger.URL("http://localhost:"+appConfig.RestPort+"/swagger/swagger.yaml")))
 	swaggerServeFileEndpoint, err := rest.NewEndpoint("/swagger/swagger.yaml", http.MethodGet, docs.SwaggerServefile)
 
 	restServer, err := rest.NewRestServer(appConfig.RestPort, []*rest.Endpoint{swaggerEndpoint, pingRestEndpoint, swaggerServeFileEndpoint})

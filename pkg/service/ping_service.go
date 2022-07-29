@@ -10,27 +10,27 @@ type pingable interface {
 	Get(ctx context.Context, message string) ([]byte, error)
 }
 
-type pingService struct {
+type PingService struct {
 	timeout          time.Duration
 	reponseDecorator PingDecorator
 	pingable         pingable
 }
 
-func NewPingService(pingable pingable, timeout time.Duration, decorator PingDecorator) (*pingService, error) {
+func NewPingService(pingable pingable, timeout time.Duration, decorator PingDecorator) (*PingService, error) {
 	if pingable == nil {
 		return nil, fmt.Errorf("pingable can't be nil")
 	}
 	if timeout == 0 {
 		return nil, fmt.Errorf("timeout can't be 0")
 	}
-	return &pingService{
+	return &PingService{
 		timeout:          timeout,
 		reponseDecorator: decorator,
 		pingable:         pingable,
 	}, nil
 }
 
-func (s *pingService) Request(ctx context.Context, r *PingRequest) (*PingResponse, error) {
+func (s *PingService) Request(ctx context.Context, r *PingRequest) (*PingResponse, error) {
 	ctx, cancelFunc := context.WithTimeout(ctx, s.timeout)
 	defer cancelFunc()
 

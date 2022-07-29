@@ -19,7 +19,7 @@ func TestNewPingService(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *pingService
+		want    *PingService
 		wantErr bool
 	}{
 		{
@@ -45,7 +45,7 @@ func TestNewPingService(t *testing.T) {
 				pingable: &dummyPingableMock{},
 				timeout:  time.Second,
 			},
-			want: &pingService{
+			want: &PingService{
 				timeout:          time.Second,
 				reponseDecorator: PingDecorator{},
 				pingable:         &dummyPingableMock{},
@@ -74,7 +74,7 @@ func (p *dummyPingableMock) Get(ctx context.Context, message string) ([]byte, er
 }
 
 func TestPingService_RequestClientErrorResponse(t *testing.T) {
-	s := &pingService{
+	s := &PingService{
 		timeout:  time.Second,
 		pingable: &dummyErrorPingableMock{},
 	}
@@ -90,7 +90,7 @@ func (p *dummyErrorPingableMock) Get(ctx context.Context, message string) ([]byt
 }
 
 func TestPingService_ClientTimeout(t *testing.T) {
-	s := &pingService{
+	s := &PingService{
 		timeout:  time.Millisecond,
 		pingable: &dummyTimeoutPingableMock{},
 	}
@@ -113,7 +113,7 @@ func (p *dummyTimeoutPingableMock) Get(ctx context.Context, message string) ([]b
 }
 
 func TestPingService_RequestClient200(t *testing.T) {
-	s := &pingService{
+	s := &PingService{
 		timeout:  time.Second,
 		pingable: &dummy200PingableMock{},
 		reponseDecorator: PingDecorator{
